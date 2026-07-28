@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smart Duplicate Finder</title>
+
+  <!-- Office.js — must load before any add-in code -->
+  <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js" type="text/javascript"></script>
+
+  <link rel="stylesheet" href="taskpane.css" />
+</head>
+<body class="ms-font-m ms-welcome">
+
+  <!-- ── Header ─────────────────────────────────────── -->
+  <header class="app-header">
+    <img src="../assets/icon-32.png" alt="" class="app-header__icon" width="24" height="24" />
+    <h1 class="app-header__title">Smart Duplicate Finder</h1>
+  </header>
+
+  <!-- ── Main Content ────────────────────────────────── -->
+  <main class="app-body">
+
+    <!-- Instructions -->
+    <section class="instructions-section">
+      <p class="instructions">
+        Select a column in your spreadsheet, adjust the confidence threshold,
+        then click <strong>Scan</strong> to detect similar entries.
+      </p>
+    </section>
+
+    <!-- Threshold control -->
+    <section class="controls-section">
+      <label class="control-label" for="threshold-slider">
+        Minimum confidence
+        <span class="threshold-value-wrap">
+          <span id="threshold-label">80%</span>
+        </span>
+      </label>
+      <input
+        id="threshold-slider"
+        type="range"
+        min="60"
+        max="99"
+        value="80"
+        step="1"
+        class="threshold-slider"
+        aria-valuemin="60"
+        aria-valuemax="99"
+        aria-valuenow="80"
+        aria-label="Minimum confidence threshold"
+      />
+      <div class="threshold-legend">
+        <span>Loose (60%)</span>
+        <span>Strict (99%)</span>
+      </div>
+    </section>
+
+    <!-- Action buttons -->
+    <section class="action-section">
+      <button id="btn-scan" class="btn btn--primary btn--full">
+        <span class="btn__icon">🔍</span>
+        Scan for Similar Entries
+      </button>
+      <button id="btn-undo" class="btn btn--ghost btn--full" style="display:none;">
+        <span class="btn__icon">↩</span>
+        Undo Last Replacement
+      </button>
+    </section>
+
+    <!-- Progress bar -->
+    <section id="progress-section" class="progress-section" style="display:none;">
+      <p id="progress-label" class="progress-label">Scanning&hellip;</p>
+      <div class="progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+        <div id="progress-bar-fill" class="progress-bar-fill"></div>
+      </div>
+      <span id="progress-text" class="progress-text">0%</span>
+    </section>
+
+    <!-- Stats panel (shown after scan) -->
+    <section id="stats-panel" class="stats-panel" style="display:none;" aria-live="polite"></section>
+
+    <!-- Results section -->
+    <section id="results-section" class="results-section" style="display:none;" aria-live="polite">
+      <div class="results-header">
+        <h2 class="results-header__title">Results</h2>
+        <p class="results-header__hint">
+          Use <strong>Accept &amp; Replace</strong> to standardize a group,
+          or <strong>Ignore</strong> to dismiss it.
+        </p>
+      </div>
+      <div id="results-panel" class="results-panel"></div>
+    </section>
+
+  </main>
+
+  <!-- ── Confidence legend ─────────────────────────── -->
+  <footer class="app-footer">
+    <div class="legend">
+      <span class="legend__item legend__item--green">99–100% Almost Certain</span>
+      <span class="legend__item legend__item--yellow">90–98% Likely</span>
+      <span class="legend__item legend__item--orange">80–89% Review</span>
+      <span class="legend__item legend__item--red">&lt;80% Different</span>
+    </div>
+  </footer>
+
+  <!-- Module entry point -->
+  <script type="module" src="taskpane.js"></script>
+
+  <!-- Inline init for progress bar (avoids a round-trip import cycle) -->
+  <script type="module">
+    import { initProgress } from "./ui/progress.js";
+    initProgress({
+      wrap:  document.getElementById("progress-section"),
+      bar:   document.getElementById("progress-bar-fill"),
+      text:  document.getElementById("progress-text"),
+      label: document.getElementById("progress-label"),
+    });
+  </script>
+</body>
+</html>
