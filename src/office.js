@@ -110,7 +110,7 @@ export async function readCellValues(rowIndices) {
 export async function isSheetProtected() {
   try {
     return Excel.run(async (ctx) => {
-      const sheet = ctx.workbook.getActiveWorksheet();
+      const sheet = ctx.workbook.worksheets.getActiveWorksheet();
       sheet.load("protection/protected");
       await ctx.sync();
       return sheet.protection.protected;
